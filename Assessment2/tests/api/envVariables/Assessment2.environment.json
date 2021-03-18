@@ -1,0 +1,54 @@
+{
+	"id": "d560e96e-acef-4ef8-85f0-09d2d0f60514",
+	"name": "Assessment2",
+	"values": [
+		{
+			"key": "baseURL",
+			"value": " https://api.todoist.com/rest/v1/tasks",
+			"enabled": true
+		},
+		{
+			"key": "apiKey",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "taskContent",
+			"value": "\"Something new\"",
+			"enabled": true
+		},
+		{
+			"key": "dueString",
+			"value": "\"Tomorrow at 15:00\"",
+			"enabled": true
+		},
+		{
+			"key": "emptyContent",
+			"value": "Empty content",
+			"enabled": true
+		},
+		{
+			"key": "notFound",
+			"value": "Not Found",
+			"enabled": true
+		},
+		{
+			"key": "activeTaskID",
+			"value": "4667872836",
+			"enabled": true
+		},
+		{
+			"key": "pageNotFound",
+			"value": "404 page not found",
+			"enabled": true
+		},
+		{
+			"key": "projectID",
+			"value": "2261019235",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2021-03-18T16:26:23.528Z",
+	"_postman_exported_using": "Postman/8.0.7"
+}

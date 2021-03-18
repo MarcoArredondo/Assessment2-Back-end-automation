@@ -1,0 +1,983 @@
+{
+	"info": {
+		"_postman_id": "1bdfbe83-9c61-4693-9425-86cf60764bdb",
+		"name": "Assessment 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TASKS",
+			"item": [
+				{
+					"name": "Positive Tests",
+					"item": [
+						{
+							"name": "Get Tasks",
+							"item": [
+								{
+									"name": "getTasks",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var schema = {\r",
+													"    \"type\": \"array\",\r",
+													"    \"items\": {\r",
+													"        \"type\": \"object\",\r",
+													"        \"properties\": {\r",
+													"            \"id\" : { \"type\": \"number\"},\r",
+													"            \"assigner\" : { \"type\": \"number\"},\r",
+													"            \"project_id\" : { \"type\": \"number\"},\r",
+													"            \"section_id\" : { \"type\": \"number\"},\r",
+													"            \"order\" : { \"type\": \"number\"},\r",
+													"            \"content\" : { \"type\": \"string\"},\r",
+													"            \"completed\" : { \"type\": \"boolean\"},\r",
+													"            \"label_ids\" : { \"type\": \"array\"},\r",
+													"            \"priority\" : { \"type\": \"number\"},\r",
+													"            \"comment_count\" : { \"type\": \"number\"},\r",
+													"            \"creator\" : { \"type\": \"number\"},\r",
+													"            \"created\" : { \"type\": \"string\"},\r",
+													"            \"url\" : { \"type\": \"string\"}\r",
+													"        }\r",
+													"    }\r",
+													"};\r",
+													"\r",
+													"const responseData = pm.response.json();\r",
+													"\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}",
+											"host": [
+												"{{baseURL}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Create Task",
+							"item": [
+								{
+									"name": "createTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//VALIDATE JSON SCHEMA\r",
+													"var schema = {\r",
+													"    \"type\": \"object\",\r",
+													"    \"properties\": {\r",
+													"        \"comment_count\" : { \"type\": \"number\"},\r",
+													"        \"completed\" : { \"type\": \"boolean\"},\r",
+													"        \"content\" : { \"type\": \"string\"},\r",
+													"        \"due\" : { \r",
+													"            \"type\": \"object\",\r",
+													"            \"properties\": {\r",
+													"                \"date\": {\"type\":\"string\"},\r",
+													"                \"datetime\": {\"type\":\"string\"},\r",
+													"                \"string\": {\"type\":\"string\"},\r",
+													"                \"timezone\": {\"type\":\"string\"},\r",
+													"            }\r",
+													"        },\r",
+													"        \"id\" : { \"type\": \"number\"},\r",
+													"        \"order\" : { \"type\": \"number\"},\r",
+													"        \"priority\" : { \"type\": \"number\"},\r",
+													"        \"project_id\" : { \"type\": \"number\"},\r",
+													"        \"section_id\" : { \"type\": \"number\"},\r",
+													"        \"parent_id\" : { \"type\": \"number\"},\r",
+													"        \"url\" : { \"type\": \"string\"}\r",
+													"    }\r",
+													"};\r",
+													"\r",
+													"const responseData = pm.response.json();\r",
+													"\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;\r",
+													"});\r",
+													"\r",
+													"//VALIDATE CONTENT\r",
+													"pm.test(\"Task content is the same\", function (){\r",
+													"    responseData.content == pm.environment.get(\"taskContent\");\r",
+													"    responseData.due.string == pm.environment.get(\"dueString\");\r",
+													"    pm.environment.set(\"activeTaskID\", responseData.id);\r",
+													"    pm.environment.set(\"projectID\", responseData.project_id);\r",
+													"});\r",
+													"\r",
+													"\r",
+													"\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Requested-ID",
+												"value": "$(uuidgen)",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"content\": {{taskContent}},\r\n    \"due_string\": {{dueString}},\r\n    \"due_lang\": \"en\",\r\n    \"priority\": 4\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}",
+											"host": [
+												"{{baseURL}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Active Task",
+							"item": [
+								{
+									"name": "getActiveTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//VALIDATE SCHEMA\r",
+													"\r",
+													"var schema = {\r",
+													"    \"type\": \"object\",\r",
+													"    \"properties\": {\r",
+													"        \"id\" : { \"type\": \"number\"},\r",
+													"        \"assigner\" : { \"type\": \"number\"},\r",
+													"        \"project_id\" : { \"type\": \"number\"},\r",
+													"        \"section_id\" : { \"type\": \"number\"},\r",
+													"        \"order\" : { \"type\": \"number\"},\r",
+													"        \"content\" : { \"type\": \"string\"},\r",
+													"        \"completed\" : { \"type\": \"boolean\"},\r",
+													"        \"priority\" : { \"type\": \"number\"},\r",
+													"        \"comment_count\" : { \"type\": \"number\"},\r",
+													"        \"creator\" : { \"type\": \"number\"},\r",
+													"        \"created\" : { \"type\": \"string\"},\r",
+													"        \"due\": {\r",
+													"            \"type\": \"object\",\r",
+													"            \"properties\":{\r",
+													"                \"recurring\": {\"type\":\"boolean\"},\r",
+													"                \"string\" : {\"type\":\"string\"},\r",
+													"                \"date\" : {\"type\": \"string\"},\r",
+													"                \"datetime\" : {\"type\": \"string\"},\r",
+													"                \"timezone\" : {\"type\": \"string\"},\r",
+													"            }\r",
+													"        },\r",
+													"        \"url\" : { \"type\": \"string\"},        \r",
+													"    }\r",
+													"};\r",
+													"\r",
+													"const responseData = pm.response.json();\r",
+													"\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;\r",
+													"});\r",
+													"\r",
+													"//VALIDATE CONTENT\r",
+													"pm.test(\"Response active task id is the same\", function(){\r",
+													"    pm.expect( responseData.id).to.be.eql(Number(pm.environment.get(\"activeTaskID\")));\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/{{activeTaskID}}",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"{{activeTaskID}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Update Task",
+							"item": [
+								{
+									"name": "updateTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//VALIDATE CONCRETE STATUS\r",
+													"pm.test(\"Modification status code received\", function(){\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{activeTaskID}},\r\n    \"assigner\": 0,\r\n    \"project_id\": {{projectID}},\r\n    \"section_id\": 0,\r\n    \"order\": 1,\r\n    \"content\": \"New Content test\",\r\n    \"completed\": false,\r\n    \"label_ids\": [],\r\n    \"priority\": 4,\r\n    \"comment_count\": 0,\r\n    \"creator\": 33058738,\r\n    \"created\": \"2021-03-17T18:45:48Z\",\r\n    \"due\": {\r\n        \"recurring\": false,\r\n        \"string\": \"tomorrow at 12:00\",\r\n        \"date\": \"2021-03-18\",\r\n        \"datetime\": \"2021-03-18T18:00:00Z\",\r\n        \"timezone\": \"America/Mexico_City\"\r\n    },\r\n    \"url\": \"https://todoist.com/showTask?id=4667872836\"\r\n}"
+										},
+										"url": {
+											"raw": "{{baseURL}}/{{activeTaskID}}",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"{{activeTaskID}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Close Task",
+							"item": [
+								{
+									"name": "closeTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Correct close status code received\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/{{activeTaskID}}/close",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"{{activeTaskID}}",
+												"close"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Reopen Task",
+							"item": [
+								{
+									"name": "reopenTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Correct reopen status code received\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});\r",
+													"\r",
+													"//Validate schema\r",
+													"var schema = {};\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(pm.response.body, schema)).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/{{activeTaskID}}/reopen",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"{{activeTaskID}}",
+												"reopen"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Delete Task",
+							"item": [
+								{
+									"name": "deleteTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Correct reopen status code received\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});\r",
+													"\r",
+													"//Validate schema\r",
+													"var schema = {};\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(pm.response.body, schema)).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}/{{activeTaskID}}",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"{{activeTaskID}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 2xx\", function () {",
+									"    pm.response.to.be.success;",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Negative Tests",
+					"item": [
+						{
+							"name": "Get Tasks",
+							"item": [
+								{
+									"name": "getTasks",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var schema = {\r",
+													"    \"type\": \"array\",\r",
+													"    \"items\": {\r",
+													"        \"type\": \"object\",\r",
+													"        \"properties\": {\r",
+													"            \"id\" : { \"type\": \"number\"},\r",
+													"            \"assigner\" : { \"type\": \"number\"},\r",
+													"            \"project_id\" : { \"type\": \"number\"},\r",
+													"            \"section_id\" : { \"type\": \"number\"},\r",
+													"            \"order\" : { \"type\": \"number\"},\r",
+													"            \"content\" : { \"type\": \"string\"},\r",
+													"            \"completed\" : { \"type\": \"boolean\"},\r",
+													"            \"label_ids\" : { \"type\": \"array\"},\r",
+													"            \"priority\" : { \"type\": \"number\"},\r",
+													"            \"comment_count\" : { \"type\": \"number\"},\r",
+													"            \"creator\" : { \"type\": \"number\"},\r",
+													"            \"created\" : { \"type\": \"string\"},\r",
+													"            \"url\" : { \"type\": \"string\"}\r",
+													"        }\r",
+													"    }\r",
+													"};\r",
+													"\r",
+													"const responseData = pm.response.body;\r",
+													"\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.false;\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "wrongToken",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}",
+											"host": [
+												"{{baseURL}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Create Task",
+							"item": [
+								{
+									"name": "createTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//VALIDATE JSON SCHEMA\r",
+													"var schema = {\r",
+													"    \"type\": \"object\",\r",
+													"    \"properties\": {\r",
+													"        \"comment_count\" : { \"type\": \"number\"},\r",
+													"        \"completed\" : { \"type\": \"boolean\"},\r",
+													"        \"content\" : { \"type\": \"string\"},\r",
+													"        \"due\" : { \r",
+													"            \"type\": \"object\",\r",
+													"            \"properties\": {\r",
+													"                \"date\": {\"type\":\"string\"},\r",
+													"                \"datetime\": {\"type\":\"string\"},\r",
+													"                \"string\": {\"type\":\"string\"},\r",
+													"                \"timezone\": {\"type\":\"string\"},\r",
+													"            }\r",
+													"        },\r",
+													"        \"id\" : { \"type\": \"number\"},\r",
+													"        \"order\" : { \"type\": \"number\"},\r",
+													"        \"priority\" : { \"type\": \"number\"},\r",
+													"        \"project_id\" : { \"type\": \"number\"},\r",
+													"        \"section_id\" : { \"type\": \"number\"},\r",
+													"        \"parent_id\" : { \"type\": \"number\"},\r",
+													"        \"url\" : { \"type\": \"string\"}\r",
+													"    }\r",
+													"};\r",
+													"\r",
+													"const responseData = pm.response.body;\r",
+													"\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.false;\r",
+													"});\r",
+													"\r",
+													"//VALIDATE CONTENT\r",
+													"pm.test(\"Task content is the same\", function (){\r",
+													"    responseData == pm.environment.get(\"emptyContent\");\r",
+													"});\r",
+													"\r",
+													"\r",
+													"\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Requested-ID",
+												"value": "$(uuidgen)",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"content\": \"\",\r\n    \"due_string\": \"\",\r\n    \"due_lang\": \"en\",\r\n    \"priority\": 4\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}",
+											"host": [
+												"{{baseURL}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Active Task",
+							"item": [
+								{
+									"name": "getActiveTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//VALIDATE SCHEMA\r",
+													"\r",
+													"var schema = {\r",
+													"    \"type\": \"object\",\r",
+													"    \"properties\": {\r",
+													"        \"id\" : { \"type\": \"number\"},\r",
+													"        \"assigner\" : { \"type\": \"number\"},\r",
+													"        \"project_id\" : { \"type\": \"number\"},\r",
+													"        \"section_id\" : { \"type\": \"number\"},\r",
+													"        \"order\" : { \"type\": \"number\"},\r",
+													"        \"content\" : { \"type\": \"string\"},\r",
+													"        \"completed\" : { \"type\": \"boolean\"},\r",
+													"        \"priority\" : { \"type\": \"number\"},\r",
+													"        \"comment_count\" : { \"type\": \"number\"},\r",
+													"        \"creator\" : { \"type\": \"number\"},\r",
+													"        \"created\" : { \"type\": \"string\"},\r",
+													"        \"due\": {\r",
+													"            \"type\": \"object\",\r",
+													"            \"properties\":{\r",
+													"                \"recurring\": {\"type\":\"boolean\"},\r",
+													"                \"string\" : {\"type\":\"string\"},\r",
+													"                \"date\" : {\"type\": \"string\"},\r",
+													"                \"datetime\" : {\"type\": \"string\"},\r",
+													"                \"timezone\" : {\"type\": \"string\"},\r",
+													"            }\r",
+													"        },\r",
+													"        \"url\" : { \"type\": \"string\"},        \r",
+													"    }\r",
+													"};\r",
+													"\r",
+													"const responseData = pm.response.text();\r",
+													"\r",
+													"pm.test('Schema is valid', function () {\r",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.false;\r",
+													"});\r",
+													"\r",
+													"//VALIDATE CONTENT\r",
+													"pm.test(\"Response body is the same consulting not valid active task\", function(){\r",
+													"    pm.expect(responseData).to.include(pm.environment.get(\"notFound\"));\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/999999",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"999999"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Update Task",
+							"item": [
+								{
+									"name": "updateTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//VALIDATE CONCRETE STATUS\r",
+													"pm.test(\"Modification status code not received\", function () {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"Not supported field\" : \"\"\r\n}"
+										},
+										"url": {
+											"raw": "{{baseURL}}/{{activeTaskID}}",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"{{activeTaskID}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Close Task",
+							"item": [
+								{
+									"name": "closeTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Not found status code received note sending TaskID\", function () {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"//Validate content\r",
+													"pm.test(\"Validate content response\", function(){\r",
+													"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"pageNotFound\"));\r",
+													"});\r",
+													"\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}//close",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"",
+												"close"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Reopen Task",
+							"item": [
+								{
+									"name": "reopenTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Not found status code received note sending TaskID\", function () {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"//Validate content\r",
+													"pm.test(\"Validate content response\", function(){\r",
+													"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"pageNotFound\"));\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "X-Requested-Id",
+												"value": "$(uuidgen)",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}//reopen",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"",
+												"reopen"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Delete Task",
+							"item": [
+								{
+									"name": "deleteTask",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Not found status code received note sending TaskID\", function () {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"//Validate content\r",
+													"pm.test(\"Validate content response\", function(){\r",
+													"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"pageNotFound\"));\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}/",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code not in success codes\", function () {",
+									"    pm.response.to.not.be.ok;",
+									"});",
+									"",
+									"pm.test(\"Response time is more than 100ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.above(100);",
+									"});",
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{apiKey}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

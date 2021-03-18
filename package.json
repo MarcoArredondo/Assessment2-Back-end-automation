@@ -1,0 +1,16 @@
+{
+  "name": "assessmentsession2",
+  "version": "1.0.0",
+  "description": "Assessment2 for QA Automation Wizeline Academy Certification",
+  "main": "index.js",
+  "scripts": {
+    "report": "newman run ./Assessment2/tests/api/collection/Assessment2.collection.json -e ./Assessment2/tests/api/envVariables/Assessment2.environment.json -r htmlextra --reporter-htmlextra-export ./Assessment2/tests/api/reports/testReport.html",
+    "test": "newman run ./Assessment2/tests/api/collection/Assessment2.collection.json -e ./Assessment2/tests/api/envVariables/Assessment2.environment.json"
+  },
+  "author": "Marco Arredondo",
+  "license": "ISC",
+  "dependencies": {
+    "newman": "^5.2.2",
+    "newman-reporter-htmlextra": "^1.20.1"
+  }
+}
